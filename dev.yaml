@@ -1,0 +1,11 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars:
+    go_version: 1.14.4
+    go_sha256sum: aed845e4185a0b2a3c3d5e1d0a35491702c55889192bb9c30e67a3de6849c067
+  tasks:
+    - name: Install golang
+      include: "tasks/golang.yaml"
