@@ -1,0 +1,8 @@
+#!/bin/sh
+../gcc-{{ gcc_version }}/configure --prefix={{ gcc_prefix_dir }} --program-suffix=-{{ gcc_version[:2] }} \
+	--enable-languages=c,c++ \
+	--disable-nls --disable-multilib --with-system-zlib \
+	--enable-shared --enable-threads=posix --enable-__cxa_atexit --enable-clocale=gnu \
+	--enable-libstdcxx-debug --enable-libstdcxx-time=yes --enable-gnu-unique-object --enable-plugin \
+	--with-cpu=native --with-arch=native --with-tune=native \
+	--enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu

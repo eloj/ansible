@@ -1,0 +1,96 @@
+# Work In Progress
+# TODO:
+# write e.g /etc/ld.so.conf.d/gcc-{{ gcc_version }}.conf expanding {{ gcc_prefix_dir }}/lib/../lib64
+# write profile.d path file
+# clean up crap after, if ok.
+#
+- name: query current gcc version
+  command: gcc -dumpversion
+  register: gcc
+  # changed_when: "gcc.rc != 0"
+  failed_when: "gcc.rc != 0"
+  check_mode: no
+
+- set_fact:
+    local_gcc_version={{ gcc.stdout if gcc.stdout is defined }}
+    gcc_work_path=/tmp
+
+- block:
+  - name: downloading GCC {{ gcc_version }} from {{ gcc_mirror }}
+    get_url:
+      url: "{{ gcc_mirror }}/gcc-{{ gcc_version }}/gcc-{{ gcc_version }}.tar.gz"
+      dest: "{{ gcc_work_path }}/gcc-{{ gcc_version }}.tar.gz"
+      checksum: "{{ gcc_checksum }}"
+      force: no
+
+#  - name: unpacking GCC
+#    unarchive:
+#      copy: no
+#      dest: "{{ gcc_work_path }}"
+#      src: "{{ gcc_work_path }}/gcc-{{ gcc_version }}.tar.gz"
+#    ignore_errors: '{{ ansible_check_mode }}'
+
+  - name: Create build directory
+    tempfile:
+      path: "{{ gcc_work_path }}"
+      suffix: "-gcc-build"
+      state: directory
+    register: builddir
+
+  - name: Writing configuration script
+    template:
+      src: templates/confgcc.sh.j2
+      # dest: "{{ builddir.path }}/confgcc.sh"
+      dest: "{{ gcc_work_path }}/confgcc.sh"
+      mode: u=rwx,g=r,o=r
+
+  - name: Download prerequisites
+    command: ./contrib/download_prerequisites
+    args:
+      chdir: "{{ gcc_work_path }}/gcc-{{ gcc_version }}"
+    register: prereqs
+    failed_when: "prereqs.rc != 0"
+
+#  - name: Configuring GCC
+#    command: ../confgcc.sh
+#    args:
+#      chdir: "{{ builddir.path }}"
+#    register: configure
+#    failed_when: "configure.rc != 0"
+
+#  - name: Building GCC (this takes a while)
+#    command: make -j3 bootstrap
+#    args:
+#      chdir: "{{ builddir.path }}"
+
+#  - name: Installing GCC
+#    command: make install
+#    args:
+#      chdir: "{{ builddir.path }}"
+#    register: install
+#    failed_when: "install.rc != 0"
+
+  # *TODO*: must use template for gcc_prefix_dir
+  - name: Setup library path
+    copy:
+      content: "{{ gcc_prefix_dir }}/lib/../lib64"
+      dest: /etc/ld.so.conf.d/gcc-{{ gcc_version[:2] }}.conf
+
+  # *TODO*: must use template for gcc_prefix_dir
+  - name: Setup GCC path
+    copy:
+      content: "PATH=$PATH:{{ gcc_prefix_dir }}/bin"
+      dest: /etc/profile.d/gcc-{{ gcc_version[:2] }}.sh
+
+#  - name: remove gcc archive
+#    file:
+#      state: absent
+#      path: "{{ gcc_work_path }}/gcc-{{ gcc_version }}.tar.gz"
+
+  when:
+    - local_gcc_version is defined
+    - local_gcc_version is version(gcc_version, '<')
+
+- block:
+  - debug: msg="GCC {{ local_gcc_version }} installed, not installing version {{ gcc_version }}"
+  when: local_gcc_version is version(gcc_version, '>=')
