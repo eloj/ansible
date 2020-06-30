@@ -8,35 +8,32 @@
   failed_when: false
   check_mode: no
 
-- name: download golang
-  get_url:
-    dest: /tmp
-    url: "https://dl.google.com/go/go{{ go_version }}.linux-amd64.tar.gz"
-    sha256sum: "{{ go_sha256sum }}"
-  when: checked_go.rc != 0
-
-- name: remove old golang install
-  file:
-    path: /usr/local/go
-    state: absent
-  when: checked_go.rc != 0
-
-- name: unpack golang
-  unarchive:
-    copy: no
-    dest: /usr/local
-    src: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
-  when: checked_go.rc != 0
-  ignore_errors: '{{ ansible_check_mode }}'
-
-- name: remove golang archive
-  file:
-    state: absent
-    path: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
-  when: checked_go.rc != 0
-
-- name: setup golang path
-  copy:
-    content: "PATH=$PATH:/usr/local/go/bin"
-    dest: /etc/profile.d/golang.sh
+- block:
+    - name: download golang
+      get_url:
+        dest: /tmp
+        url: "https://dl.google.com/go/go{{ go_version }}.linux-amd64.tar.gz"
+        sha256sum: "{{ go_sha256sum }}"
+    
+    - name: remove old golang install
+      file:
+        path: /usr/local/go
+        state: absent
+    
+    - name: unpack golang
+      unarchive:
+        copy: no
+        dest: /usr/local
+        src: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
+      ignore_errors: '{{ ansible_check_mode }}'
+    
+    - name: remove golang archive
+      file:
+        state: absent
+        path: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
+    
+    - name: setup golang path
+      copy:
+        content: "PATH=$PATH:/usr/local/go/bin"
+        dest: /etc/profile.d/golang.sh
   when: checked_go.rc != 0
