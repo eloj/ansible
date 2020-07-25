@@ -13,7 +13,7 @@
       get_url:
         dest: /tmp
         url: "https://dl.google.com/go/go{{ go_version }}.linux-amd64.tar.gz"
-        sha256sum: "{{ go_sha256sum }}"
+        checksum: "{{ go_checksum }}"
     
     - name: remove old golang install
       file:
