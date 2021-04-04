@@ -4,8 +4,8 @@
   become_user: root
   become_method: sudo
   vars:
-    go_version: 1.16.2
-    go_checksum: sha256:542e936b19542e62679766194364f45141fde55169db2d8d01046555ca9eb4b8
+    go_version: 1.16.3
+    go_checksum: sha256:951a3c7c6ce4e56ad883f97d9db74d3d6d80d5fec77455c6ada6c1f7ac4776d2
   tasks:
     - name: Install golang
       include: "tasks/golang.yaml"
