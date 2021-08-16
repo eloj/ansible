@@ -2,7 +2,7 @@
 ### Install/Upgrade golang
 ###
 - name: query current golang version
-  command: grep "go{{ go_version }}" /usr/local/go/VERSION
+  command: grep "go{{ go_version }}" "{{ go_path }}/go/VERSION"
   register: checked_go
   changed_when: "checked_go.rc != 0"
   failed_when: false
@@ -14,26 +14,22 @@
         dest: /tmp
         url: "https://dl.google.com/go/go{{ go_version }}.linux-amd64.tar.gz"
         checksum: "{{ go_checksum }}"
-    
     - name: remove old golang install
       file:
-        path: /usr/local/go
+        path: "{{ go_path }}/go"
         state: absent
-    
     - name: unpack golang
       unarchive:
         copy: no
-        dest: /usr/local
+        dest: "{{ go_path }}"
         src: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
       ignore_errors: '{{ ansible_check_mode }}'
-    
     - name: remove golang archive
       file:
         state: absent
         path: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
-    
     - name: setup golang path
       copy:
-        content: "PATH=$PATH:/usr/local/go/bin"
+        content: "PATH=$PATH:{{ go_path }}/go/bin"
         dest: /etc/profile.d/golang.sh
   when: checked_go.rc != 0
