@@ -4,8 +4,8 @@
   become_user: root
   become_method: sudo
   vars:
-    go_version: 1.19.4
-    go_checksum: sha256:c9c08f783325c4cf840a94333159cc937f05f75d36a8b307951d5bd959cf2ab8
+    go_version: 1.19.5
+    go_checksum: sha256:36519702ae2fd573c9869461990ae550c8c0d955cd28d2827a6b159fda81ff95
     go_path: /opt/local
   tasks:
     - name: Install golang
