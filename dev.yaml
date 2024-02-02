@@ -3,10 +3,10 @@
   become: yes
   become_user: root
   become_method: sudo
-  vars:
-    go_version: 1.21.6
-    go_checksum: sha256:3f934f40ac360b9c01f616a9aa1796d227d8b0328bf64cb045c7b8c4ee9caea4
-    go_path: /opt/local
   tasks:
     - name: Install golang
-      include: "tasks/golang.yaml"
+      import_tasks: "tasks/golang.yaml"
+      vars:
+        go_version: 1.21.6
+        go_checksum: sha256:3f934f40ac360b9c01f616a9aa1796d227d8b0328bf64cb045c7b8c4ee9caea4
+        go_path: /opt/local
