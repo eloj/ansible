@@ -9,11 +9,18 @@
   check_mode: no
 
 - block:
+    - name: configure archive filename
+      set_fact:
+        go_archive: "go{{ go_version }}.linux-{{ arch }}.tar.gz"
     - name: download golang
       get_url:
         dest: /tmp
-        url: "https://dl.google.com/go/go{{ go_version }}.linux-amd64.tar.gz"
-        checksum: "{{ go_checksum }}"
+        url: "https://dl.google.com/go/{{ go_archive }}"
+        checksum: "{{ lookup('ansible.builtin.vars', 'go_checksum_' + arch) }}"
+    - name: create installation directory
+      file:
+        path: "{{ go_path }}"
+        state: directory
     - name: remove old golang install
       file:
         path: "{{ go_path }}/go"
@@ -22,12 +29,12 @@
       unarchive:
         copy: no
         dest: "{{ go_path }}"
-        src: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
+        src: "/tmp/{{ go_archive }}"
       ignore_errors: '{{ ansible_check_mode }}'
     - name: remove golang archive
       file:
         state: absent
-        path: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
+        path: "/tmp/{{ go_archive }}"
     - name: setup golang path
       copy:
         content: "PATH=$PATH:{{ go_path }}/go/bin"
