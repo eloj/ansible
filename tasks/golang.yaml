@@ -1,3 +1,4 @@
+---
 ###
 ### Install/Upgrade golang
 ###
@@ -6,7 +7,7 @@
   register: checked_go
   changed_when: "checked_go.rc != 0"
   failed_when: false
-  check_mode: no
+  check_mode: false
 
 - block:
     - name: configure archive filename
@@ -27,7 +28,7 @@
         state: absent
     - name: unpack golang
       unarchive:
-        copy: no
+        remote_src: true
         dest: "{{ go_path }}"
         src: "/tmp/{{ go_archive }}"
       ignore_errors: '{{ ansible_check_mode }}'
