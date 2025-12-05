@@ -7,6 +7,11 @@
     - name: Detect architecture
       set_fact:
         arch: "{{ 'arm64' if ansible_facts.architecture == 'aarch64' else 'amd64' }}"
+    - name: Upgrade vulkan-sdk
+      import_tasks: "tasks/vulkan-sdk.yaml"
+      vars:
+        vulkansdk_path: /opt/local/vulkan-sdk
+      when: arch == 'amd64'
     - name: Install golang
       import_tasks: "tasks/golang.yaml"
       vars:
