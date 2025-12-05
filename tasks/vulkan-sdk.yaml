@@ -1,0 +1,56 @@
+---
+###
+### Install/Upgrade vulkan-sdk
+###
+### TODO:
+### 	Remove previous version (use config flag to make this optional?)
+- name: query local vulkan-sdk version
+  ansible.builtin.shell:
+    chdir: "{{ vulkansdk_path }}"
+    cmd: ls -1d [1-9]*.[0-9]*.[0-9]*.[0-9]* | sort -V | tail -n 1
+  register: local_sdk
+  changed_when: false
+  failed_when: false
+
+- name: query latest vulkan-sdk version
+  uri:
+    url: https://vulkan.lunarg.com/sdk/latest/linux.txt
+    return_content: true
+  register: online_sdk
+  changed_when: false
+  failed_when: "online_sdk is failed"
+
+- block:
+    - name: debug message
+      ansible.builtin.debug:
+        msg: "UPGRADE! Local version {{ local_sdk.stdout }}, Online version: {{ online_sdk.content }}"
+    - name: configure archive filename
+      set_fact:
+        sdk_archive: "/tmp/vulkansdk-linux-x86_64-{{ online_sdk.content }}.tar.xz"
+    - name: create installation directory
+      file:
+        path: "{{ vulkansdk_path }}"
+        state: directory
+    - name: download vulkan-sdk
+      get_url:
+        dest: "{{ sdk_archive }}"
+        # creates: "{{ sdk_archive }}"
+        url: "https://sdk.lunarg.com/sdk/download/{{ online_sdk.content }}/linux/vulkan_sdk.tar.xz"
+    - name: unpack vulkan-sdk
+      unarchive:
+        remote_src: true
+        dest: "{{ vulkansdk_path }}"
+        src: "{{ sdk_archive }}"
+      changed_when: true
+      ignore_errors: '{{ ansible_check_mode }}'
+    - name: remove vulkan-sdk archive
+      file:
+        state: absent
+        path: "{{ sdk_archive }}"
+    - name: setup vulkan-sdk env
+      copy:
+        content: "source {{ vulkansdk_path }}/{{ online_sdk.content }}/setup-env.sh"
+        dest: /etc/profile.d/vulkan-sdk.sh
+  when:
+    local_sdk.rc != 0 or
+    local_sdk.stdout is version(online_sdk.content, '<')
