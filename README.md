@@ -1,10 +1,9 @@
 # My public ansible tasks
 
-Currently the only task available on the main branch is one
-to install/upgrade golang.
+The script `./update.sh` will run tasks locally, using the
+settings in `dev.yaml`.
 
-The script `./update.sh` will run said task locally, using the
-default settings. Sudo is required by default configuration.
+Sudo is required by the default configuration.
 
 ## tasks/vulkan-sdk.yaml
 
@@ -30,4 +29,3 @@ taken from https://go.dev/dl/ at the time this repo was updated.
 
 * Q: Are you aware you can easily upgrade using golang itself?
 * A: Yes.
-
