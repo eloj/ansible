@@ -10,6 +10,7 @@
     - name: Upgrade vulkan-sdk
       import_tasks: "tasks/vulkan-sdk.yaml"
       vars:
+        uninstall_previous_version: true
         vulkansdk_path: /opt/local/vulkan-sdk
       when: arch == 'amd64'
     - name: Install golang

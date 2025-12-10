@@ -14,6 +14,9 @@ The location is specified by `vulkansdk_path` in `dev.yaml`,
 and a `profile.d/vulkan-sdk.sh` script will be added to setup the
 environment on login.
 
+The `uninstall_previous_version` parameter can be used to control
+whether the old SDK is kept or removed.
+
 ## tasks/golang.yaml
 
 A task that installs or upgrades a golang installation to
