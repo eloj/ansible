@@ -16,7 +16,7 @@
     - name: Install golang
       import_tasks: "tasks/golang.yaml"
       vars:
-        go_version: 1.25.6
-        go_checksum_amd64: sha256:f022b6aad78e362bcba9b0b94d09ad58c5a70c6ba3b7582905fababf5fe0181a
-        go_checksum_arm64: sha256:738ef87d79c34272424ccdf83302b7b0300b8b096ed443896089306117943dd5
+        go_version: 1.26.0
+        go_checksum_amd64: sha256:aac1b08a0fb0c4e0a7c1555beb7b59180b05dfc5a3d62e40e9de90cd42f88235
+        go_checksum_arm64: sha256:bd03b743eb6eb4193ea3c3fd3956546bf0e3ca5b7076c8226334afe6b75704cd
         go_path: /opt/local
