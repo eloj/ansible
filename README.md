@@ -1,7 +1,9 @@
 # My public ansible tasks
 
 The script `./update.sh` will run tasks locally, using the
-settings in `dev.yaml`.
+settings in `dev.yaml`. You can pass the environment variables
+`NOVULKAN=1` or `NOGO=1` to skip specific tasks. (Yes, I'd
+rather do this than deal with ansible's inventory system)
 
 Sudo is required by the default configuration.
 
